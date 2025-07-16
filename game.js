@@ -1,5 +1,7 @@
 alert("HEllo this is Katsuki from javascript");
-<<<<<<< HEAD
-=======
+
 alert("HEllo this is Katsuki from javascript222");
->>>>>>> c0a128a7ea5aefb1ff83dc831a54ec1ce9d45925
+
+function findAvg(num1, num2, num3){
+    return (num1+num2+num3)/3;
+}
