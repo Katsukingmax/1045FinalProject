@@ -11,3 +11,6 @@ function sum(num1, num2) {
 function newFunc1() {
   return "new Function1";
 }
+function newFunc2() {
+  return "new function2";
+}
