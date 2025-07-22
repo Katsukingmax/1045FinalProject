@@ -70,7 +70,10 @@ function handleClick(event) {
 
   let col = Math.floor(x / SQUARE_SIZE);
   let row = Math.floor(y / SQUARE_SIZE);
+
   let value = board[row][col];
+  value.isClicked=true;
+  
 
   alert("Clicked: Column " + row + ", row " + col + " → value = " + value);
 }
@@ -94,13 +97,37 @@ function Piece(row, col, color, isClicked, isKing) {
   this.isKing = isKing;
 
   this.draw = function (ctx) {
-    ctx.fillStyle = this.color;
+
     let x = this.col * SQUARE_SIZE + SQUARE_SIZE / 2;
     let y = this.row * SQUARE_SIZE + SQUARE_SIZE / 2;
     let radius = SQUARE_SIZE / 2 - 10;
+
+    if (this.isClicked==true){
+      //yellow circle
+      ctx.fillStyle="yellow";
+      ctx.beginPath();
+      ctx.arc(x, y, 40, 0, 2 * Math.PI);
+      ctx.fill();
+    }
+    ctx.fillStyle = this.color;
     ctx.beginPath();
 
     ctx.arc(x, y, radius, 0, 2 * Math.PI);
     ctx.fill();
+
+    
   };
+}
+
+
+function getSelectedPiece(){
+  for(let i=0; i<ROWS; i++){
+    for (let j=0; j<COLS; j++){
+      let piece=board[i][j];
+      if (piece.isClicked==true){
+        return piece;
+      }
+    }
+  }
+  return null;
 }
