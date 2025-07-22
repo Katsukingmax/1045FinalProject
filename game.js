@@ -9,9 +9,9 @@ function createBoard() {
     let row = [];
     for (let c = 0; c < COLS; c++) {
       if (r < 3 && (r + c) % 2 === 1) {
-        row.push(new Piece (r, c, "gray", false, false) );
+        row.push(new Piece (r, c, "red", false, false) );
       } else if (r > 4 && (r + c) % 2 === 1) {
-        row.push(new Piece (r, c, "red", false, false));
+        row.push(new Piece (r, c, "gray", false, false));
       } else {
         row.push(null);
       }
@@ -118,6 +118,7 @@ function Piece(row, col, color, isClicked, isKing) {
   this.isClicked = isClicked;
   this.isKing = isKing;
 
+  //draw method
   this.draw = function (ctx) {
 
     let x = this.col * SQUARE_SIZE + SQUARE_SIZE / 2;
@@ -140,17 +141,61 @@ function Piece(row, col, color, isClicked, isKing) {
     
   };
 
+  //checkKing method
   this.checkKing=function(){
-    if (this.color=="red" && this.row==0){
+    if (this.color=="red" && this.row==7){
       this.isKing=true;
     }
-    else if(this.color=="gray" && this.row==7){
+    else if(this.color=="gray" && this.row==0){
       this.isKing=true;
     }
     else{
       this.isKing=false;
     }
   };
+
+  // isValid method
+  this.isValidMove=function(newRow, newCol){
+
+    //case 1
+    if (newRow==this.row+1 && newCol==this.col){
+      return false;
+    }
+    else if (newRow==this.row-1 && newCol==this.col){
+      return false;
+    }
+    else if (newCol==this.col+1 && newRow==this.row){
+      return false;
+    }
+    else if (newCol==this.col+1 && newRow==this.row){
+      return false;
+    }
+
+    //case 2
+    if (this.color=="red" || this.isKing==true){
+      //forwardRight
+      if (newCol=this.col+1 && newRow==this.row-1 && board[newRow][newCol==null]){
+        return true;
+      }
+      //forwardLeft
+      if (newCol=this.col+1 && newRow==this.row+1 && board[newRow][newCol==null]){
+        return true;
+      }
+    }
+    else if (this.color=="gray" || this.isKing==true){
+      //forwardLeft
+      if (newCol=this.col-1 && newRow==this.row-1 && board[newRow][newCol==null]){
+        return true;
+      }
+      //forwardRight
+      if (newCol=this.col-1 && newRow==this.row+1 && board[newRow][newCol==null]){
+        return true;
+      }
+    }
+
+    //case 3
+    
+  }
 }
 
 
