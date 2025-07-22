@@ -71,11 +71,31 @@ function handleClick(event) {
   let col = Math.floor(x / SQUARE_SIZE);
   let row = Math.floor(y / SQUARE_SIZE);
 
-  let value = board[row][col];
-  value.isClicked=true;
-  
+  let clickedPiece = board[row][col]; 
+  //square is not empty
+  if (clickedPiece != null) {
+    let selectedPiece = getSelectedPiece();
 
-  alert("Clicked: Column " + row + ", row " + col + " → value = " + value);
+    if (selectedPiece && selectedPiece != clickedPiece) {
+      selectedPiece.isClicked = false;
+      clickedPiece.isClicked = true;
+    } 
+    else if (selectedPiece == clickedPiece) {
+      clickedPiece.isClicked = !clickedPiece.isClicked;
+    } 
+    else {
+      clickedPiece.isClicked = true;
+    }
+  }
+  //square is not empty
+  else{
+
+  }
+
+
+  drawBoard();
+  drawPieces();
+  alert("Clicked: Column " + row + ", row " + col + " → value = " + clickedPiece);
 }
 
 window.onload = function () {
@@ -86,6 +106,8 @@ window.onload = function () {
   const canvas = document.getElementById("myCanvas");
   canvas.addEventListener("click", handleClick);
 };
+
+
 
 //CREATE A CONSTRUCTOR FUNCTION (Piece)
 
@@ -106,7 +128,7 @@ function Piece(row, col, color, isClicked, isKing) {
       //yellow circle
       ctx.fillStyle="yellow";
       ctx.beginPath();
-      ctx.arc(x, y, 40, 0, 2 * Math.PI);
+      ctx.arc(x, y, 50, 0, 2 * Math.PI);
       ctx.fill();
     }
     ctx.fillStyle = this.color;
@@ -124,7 +146,7 @@ function getSelectedPiece(){
   for(let i=0; i<ROWS; i++){
     for (let j=0; j<COLS; j++){
       let piece=board[i][j];
-      if (piece.isClicked==true){
+      if (piece!=null && piece.isClicked==true){
         return piece;
       }
     }
