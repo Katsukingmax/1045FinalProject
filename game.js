@@ -1,35 +1,19 @@
-// alert("HEllo this is Katsuki from javascript");
-
-// alert("HEllo this is Katsuki from javascript222");
-
-// function findAvg(num1, num2, num3) {
-//   return (num1 + num2 + num3) / 3;
-// }
-// function sum(num1, num2) {
-//   return num1 + num2;
-// }
-// function newFunc1() {
-//   return "new Function1";
-// }
-// function newFunc2() {
-//   return "new function2";
-// }
 let ROWS = 8;
 let COLS = 8;
 let SQUARE_SIZE = 100;
 let board = [];
-//0=empty 1=red 2=black
+//0=empty 1=red 2=gray
 
 function createBoard() {
   for (let r = 0; r < ROWS; r++) {
     let row = [];
     for (let c = 0; c < COLS; c++) {
       if (r < 3 && (r + c) % 2 === 1) {
-        row.push(2);
+        row.push(new Piece (r, c, "gray", false, false) );
       } else if (r > 4 && (r + c) % 2 === 1) {
-        row.push(1);
+        row.push(new Piece (r, c, "red", false, false));
       } else {
-        row.push(0);
+        row.push(null);
       }
     }
     board.push(row);
@@ -57,20 +41,24 @@ function drawPieces() {
 
   for (let r = 0; r < ROWS; r++) {
     for (let c = 0; c < COLS; c++) {
-      if (board[r][c] !== 0) {
-        if (board[r][c] === 1) {
-          ctx.fillStyle = "grey";
-        } else {
-          ctx.fillStyle = "red";
-        }
-        let x = c * SQUARE_SIZE + SQUARE_SIZE / 2;
-        let y = r * SQUARE_SIZE + SQUARE_SIZE / 2;
-        let radius = SQUARE_SIZE / 2 - 10;
-
-        ctx.beginPath();
-        ctx.arc(x, y, radius, 0, 2 * Math.PI);
-        ctx.fill();
+      let piece=board[r][c];
+      if (piece!=null){
+        piece.draw(ctx);
       }
+      // if (board[r][c] !== 0) {
+      //   if (board[r][c] === 1) {
+      //     ctx.fillStyle = "grey";
+      //   } else {
+      //     ctx.fillStyle = "red";
+      //   }
+      //   let x = c * SQUARE_SIZE + SQUARE_SIZE / 2;
+      //   let y = r * SQUARE_SIZE + SQUARE_SIZE / 2;
+      //   let radius = SQUARE_SIZE / 2 - 10;
+
+      //   ctx.beginPath();
+      //   ctx.arc(x, y, radius, 0, 2 * Math.PI);
+      //   ctx.fill();
+      // }
     }
   }
 }
@@ -95,3 +83,24 @@ window.onload = function () {
   const canvas = document.getElementById("myCanvas");
   canvas.addEventListener("click", handleClick);
 };
+
+//CREATE A CONSTRUCTOR FUNCTION (Piece)
+
+function Piece(row, col, color, isClicked, isKing) {
+  this.row = row;
+  this.col = col;
+  this.color = color;
+  this.isClicked = isClicked;
+  this.isKing = isKing;
+
+  this.draw = function (ctx) {
+    ctx.fillStyle = this.color;
+    let x = this.col * SQUARE_SIZE + SQUARE_SIZE / 2;
+    let y = this.row * SQUARE_SIZE + SQUARE_SIZE / 2;
+    let radius = SQUARE_SIZE / 2 - 10;
+    ctx.beginPath();
+
+    ctx.arc(x, y, radius, 0, 2 * Math.PI);
+    ctx.fill();
+  };
+}
