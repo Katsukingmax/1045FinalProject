@@ -139,6 +139,18 @@ function Piece(row, col, color, isClicked, isKing) {
 
     
   };
+
+  this.checkKing=function(){
+    if (this.color=="red" && this.row==0){
+      this.isKing=true;
+    }
+    else if(this.color=="gray" && this.row==7){
+      this.isKing=true;
+    }
+    else{
+      this.isKing=false;
+    }
+  };
 }
 
 
