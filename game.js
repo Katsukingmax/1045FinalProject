@@ -195,7 +195,7 @@ function Piece(row, col, color, isClicked, isKing) {
       }
     }
 
-    // jump move and then capture middle piece
+    //jump move and then capture middle piece
     // if (Math.abs(rowDiff) == 2 && Math.abs(colDiff) == 2) {
     //   let midRow = this.row + rowDiff / 2;
     //   let midCol = this.col + colDiff / 2;
@@ -207,28 +207,37 @@ function Piece(row, col, color, isClicked, isKing) {
     //   }
     // }
 
-    // if (this.isKing == true || this.color == "gray") {
-    //   if (Math.abs(colDiff) == 2 && rowDiff == -2) {
-    //     let midRow = this.row + rowDiff / 2;
-    //     let midCol = this.col + colDiff/2;
-    //     let jumpedPiece = board[midRow][midCol];
-    //     if (jumpedPiece != null && jumpedPiece.color != this.color) {
-    //       board[midRow][midCol] = null;
-    //       return true;
-    //     }
-    //   }
-    // } else if (this.isKing == true || this.color == "red") {
-    //   if (Math.abs(colDiff) == 2 && rowDiff == 2) {
-    //     let midRow = this.row + rowDiff / 2;
-    //     let midCol = this.col + colDiff/2;
-    //     let jumpedPiece = board[midRow][midCol];
-    //     if (jumpedPiece != null && jumpedPiece.color != this.color) {
-    //       board[midRow][midCol] = null;
-    //       return true;
-    //     }
-    //   }
-    // }
-    
+    if (this.isKing == true) {
+      if (Math.abs(colDiff) == 2 && Math.abs(rowDiff) == 2) {
+        let midRow = this.row + rowDiff / 2;
+        let midCol = this.col + colDiff / 2;
+        let jumpedPiece = board[midRow][midCol];
+        if (jumpedPiece != null && jumpedPiece.color != this.color) {
+          board[midRow][midCol] = null;
+          return true;
+        }
+      }
+    } else if (this.color == "gray") {
+      if (Math.abs(colDiff) == 2 && rowDiff == -2) {
+        let midRow = this.row + rowDiff / 2;
+        let midCol = this.col + colDiff / 2;
+        let jumpedPiece = board[midRow][midCol];
+        if (jumpedPiece != null && jumpedPiece.color != this.color) {
+          board[midRow][midCol] = null;
+          return true;
+        }
+      }
+    } else if (this.color == "red") {
+      if (Math.abs(colDiff) == 2 && rowDiff == 2) {
+        let midRow = this.row + rowDiff / 2;
+        let midCol = this.col + colDiff / 2;
+        let jumpedPiece = board[midRow][midCol];
+        if (jumpedPiece != null && jumpedPiece.color != this.color) {
+          board[midRow][midCol] = null;
+          return true;
+        }
+      }
+    }
 
     return false;
   };
