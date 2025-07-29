@@ -2,16 +2,19 @@ let ROWS = 8;
 let COLS = 8;
 let SQUARE_SIZE = 100;
 let board = [];
-//0=empty 1=red 2=gray
+// turn%2==0 gray, 
+//turn%2==1 red
+let turn=0;
+
 
 function createBoard() {
   for (let r = 0; r < ROWS; r++) {
     let row = [];
     for (let c = 0; c < COLS; c++) {
       if (r < 3 && (r + c) % 2 === 1) {
-        row.push(new Piece (r, c, "red", false, false) );
+        row.push(new Piece(r, c, "red", false, false));
       } else if (r > 4 && (r + c) % 2 === 1) {
-        row.push(new Piece (r, c, "gray", false, false));
+        row.push(new Piece(r, c, "gray", false, false));
       } else {
         row.push(null);
       }
@@ -41,8 +44,8 @@ function drawPieces() {
 
   for (let r = 0; r < ROWS; r++) {
     for (let c = 0; c < COLS; c++) {
-      let piece=board[r][c];
-      if (piece!=null){
+      let piece = board[r][c];
+      if (piece != null) {
         piece.draw(ctx);
       }
       // if (board[r][c] !== 0) {
@@ -71,7 +74,7 @@ function handleClick(event) {
   let col = Math.floor(x / SQUARE_SIZE);
   let row = Math.floor(y / SQUARE_SIZE);
 
-  let clickedPiece = board[row][col]; 
+  let clickedPiece = board[row][col];
   //square is not empty
   if (clickedPiece != null) {
     let selectedPiece = getSelectedPiece();
@@ -79,23 +82,30 @@ function handleClick(event) {
     if (selectedPiece && selectedPiece != clickedPiece) {
       selectedPiece.isClicked = false;
       clickedPiece.isClicked = true;
-    } 
-    else if (selectedPiece == clickedPiece) {
+    } else if (selectedPiece == clickedPiece) {
       clickedPiece.isClicked = !clickedPiece.isClicked;
-    } 
-    else {
+    } else {
       clickedPiece.isClicked = true;
     }
   }
-  //square is not empty
-  else{
-
+  //square is empty
+  else {
+    let p = getSelectedPiece();
+    if (p != null && p.isValidMove(row, col) == true) {
+      board[p.row][p.col] = null;
+      p.row = row;
+      p.col = col;
+      p.checkKing();
+      board[row][col] = p;
+      p.isClicked = false;
+    }
   }
-
 
   drawBoard();
   drawPieces();
-  alert("Clicked: Column " + row + ", row " + col + " → value = " + clickedPiece);
+  // alert(
+  //   "Clicked: Column " + row + ", row " + col + " → value = " + clickedPiece
+  // );
 }
 
 window.onload = function () {
@@ -106,8 +116,6 @@ window.onload = function () {
   const canvas = document.getElementById("myCanvas");
   canvas.addEventListener("click", handleClick);
 };
-
-
 
 //CREATE A CONSTRUCTOR FUNCTION (Piece)
 
@@ -120,14 +128,13 @@ function Piece(row, col, color, isClicked, isKing) {
 
   //draw method
   this.draw = function (ctx) {
-
     let x = this.col * SQUARE_SIZE + SQUARE_SIZE / 2;
     let y = this.row * SQUARE_SIZE + SQUARE_SIZE / 2;
     let radius = SQUARE_SIZE / 2 - 10;
 
-    if (this.isClicked==true){
+    if (this.isClicked == true) {
       //yellow circle
-      ctx.fillStyle="yellow";
+      ctx.fillStyle = "yellow";
       ctx.beginPath();
       ctx.arc(x, y, 50, 0, 2 * Math.PI);
       ctx.fill();
@@ -138,72 +145,79 @@ function Piece(row, col, color, isClicked, isKing) {
     ctx.arc(x, y, radius, 0, 2 * Math.PI);
     ctx.fill();
 
-    
+    if (this.isKing == true) {
+      
+      ctx.fillStyle = "white";
+
+      // Left eye
+      ctx.beginPath();
+      ctx.arc(x - 10, y - 10, 3, 0, 2 * Math.PI);
+      ctx.fill();
+
+      // Right eye
+      ctx.beginPath();
+      ctx.arc(x + 10, y - 10, 3, 0, 2 * Math.PI);
+      ctx.fill();
+
+      // mouth
+      ctx.beginPath();
+      ctx.arc(x, y + 5, 10, 0, Math.PI); 
+      ctx.strokeStyle = "white";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+    }
   };
 
   //checkKing method
-  this.checkKing=function(){
-    if (this.color=="red" && this.row==7){
-      this.isKing=true;
-    }
-    else if(this.color=="gray" && this.row==0){
-      this.isKing=true;
-    }
-    else{
-      this.isKing=false;
+  this.checkKing = function () {
+    if (this.color == "red" && this.row == 7) {
+      this.isKing = true;
+    } else if (this.color == "gray" && this.row == 0) {
+      this.isKing = true;
     }
   };
 
   // isValid method
-  this.isValidMove=function(newRow, newCol){
+  this.isValidMove = function (newRow, newCol) {
+    if (newRow < 0 || newRow >= ROWS || newCol < 0 || newCol >= COLS)
+      return false;
 
-    //case 1
-    if (newRow==this.row+1 && newCol==this.col){
-      return false;
-    }
-    else if (newRow==this.row-1 && newCol==this.col){
-      return false;
-    }
-    else if (newCol==this.col+1 && newRow==this.row){
-      return false;
-    }
-    else if (newCol==this.col+1 && newRow==this.row){
-      return false;
-    }
+    // new place has to be empty
+    if (board[newRow][newCol] !== null) return false;
 
-    //case 2
-    if (this.color=="red" || this.isKing==true){
-      //forwardRight
-      if (newCol=this.col+1 && newRow==this.row-1 && board[newRow][newCol==null]){
+    let rowDiff = newRow - this.row;
+    let colDiff = newCol - this.col;
+
+    if (Math.abs(rowDiff) === 1 && Math.abs(colDiff) === 1) {
+      if (this.color === "red" && (rowDiff == 1 || this.isKing)) {
         return true;
       }
-      //forwardLeft
-      if (newCol=this.col+1 && newRow==this.row+1 && board[newRow][newCol==null]){
-        return true;
-      }
-    }
-    else if (this.color=="gray" || this.isKing==true){
-      //forwardLeft
-      if (newCol=this.col-1 && newRow==this.row-1 && board[newRow][newCol==null]){
-        return true;
-      }
-      //forwardRight
-      if (newCol=this.col-1 && newRow==this.row+1 && board[newRow][newCol==null]){
+      if (this.color == "gray" && (rowDiff == -1 || this.isKing)) {
         return true;
       }
     }
 
-    //case 3
-    
-  }
+    // jump move and then capture middle piece
+    if (Math.abs(rowDiff) == 2 && Math.abs(colDiff) == 2) {
+      let midRow = this.row + rowDiff / 2;
+      let midCol = this.col + colDiff / 2;
+      let jumpedPiece = board[midRow][midCol];
+
+      if (jumpedPiece != null && jumpedPiece.color != this.color) {
+        board[midRow][midCol] = null;
+        return true;
+      }
+    }
+
+    return false;
+  };
 }
 
-
-function getSelectedPiece(){
-  for(let i=0; i<ROWS; i++){
-    for (let j=0; j<COLS; j++){
-      let piece=board[i][j];
-      if (piece!=null && piece.isClicked==true){
+function getSelectedPiece() {
+  for (let i = 0; i < ROWS; i++) {
+    for (let j = 0; j < COLS; j++) {
+      let piece = board[i][j];
+      if (piece != null && piece.isClicked == true) {
         return piece;
       }
     }
