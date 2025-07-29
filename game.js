@@ -2,10 +2,9 @@ let ROWS = 8;
 let COLS = 8;
 let SQUARE_SIZE = 100;
 let board = [];
-// turn%2==0 gray, 
+// turn%2==0 gray,
 //turn%2==1 red
-let turn=0;
-
+let turn = 0;
 
 function createBoard() {
   for (let r = 0; r < ROWS; r++) {
@@ -146,7 +145,6 @@ function Piece(row, col, color, isClicked, isKing) {
     ctx.fill();
 
     if (this.isKing == true) {
-      
       ctx.fillStyle = "white";
 
       // Left eye
@@ -161,7 +159,7 @@ function Piece(row, col, color, isClicked, isKing) {
 
       // mouth
       ctx.beginPath();
-      ctx.arc(x, y + 5, 10, 0, Math.PI); 
+      ctx.arc(x, y + 5, 10, 0, Math.PI);
       ctx.strokeStyle = "white";
       ctx.lineWidth = 2;
       ctx.stroke();
@@ -198,14 +196,36 @@ function Piece(row, col, color, isClicked, isKing) {
     }
 
     // jump move and then capture middle piece
-    if (Math.abs(rowDiff) == 2 && Math.abs(colDiff) == 2) {
-      let midRow = this.row + rowDiff / 2;
-      let midCol = this.col + colDiff / 2;
-      let jumpedPiece = board[midRow][midCol];
+    // if (Math.abs(rowDiff) == 2 && Math.abs(colDiff) == 2) {
+    //   let midRow = this.row + rowDiff / 2;
+    //   let midCol = this.col + colDiff / 2;
+    //   let jumpedPiece = board[midRow][midCol];
 
-      if (jumpedPiece != null && jumpedPiece.color != this.color) {
-        board[midRow][midCol] = null;
-        return true;
+    //   if (jumpedPiece != null && jumpedPiece.color != this.color) {
+    //     board[midRow][midCol] = null;
+    //     return true;
+    //   }
+    // }
+
+    if (this.color == "gray" || this.isKing == true) {
+      if (Math.abs(rowDiff) == 2 && colDiff == -2) {
+        let midRow = this.row + rowDiff / 2;
+        let midCol = this.col + colDiff/2;
+        let jumpedPiece = board[midRow][midCol];
+        if (jumpedPiece != null && jumpedPiece.color != this.color) {
+          board[midRow][midCol] = null;
+          return true;
+        }
+      }
+    } else if (this.color == "red" || this.isKing == true) {
+      if (Math.abs(rowDiff) == 2 && colDiff == 2) {
+        let midRow = this.row + rowDiff / 2;
+        let midCol = this.col + colDiff/2;
+        let jumpedPiece = board[midRow][midCol];
+        if (jumpedPiece != null && jumpedPiece.color != this.color) {
+          board[midRow][midCol] = null;
+          return true;
+        }
       }
     }
 
