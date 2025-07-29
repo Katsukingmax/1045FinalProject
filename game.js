@@ -2,9 +2,7 @@ let ROWS = 8;
 let COLS = 8;
 let SQUARE_SIZE = 100;
 let board = [];
-// turn%2==0 gray,
-//turn%2==1 red
-let turn = 0;
+
 
 function createBoard() {
   for (let r = 0; r < ROWS; r++) {
@@ -102,6 +100,7 @@ function handleClick(event) {
 
   drawBoard();
   drawPieces();
+  currenTurn++;
   // alert(
   //   "Clicked: Column " + row + ", row " + col + " → value = " + clickedPiece
   // );
@@ -196,17 +195,7 @@ function Piece(row, col, color, isClicked, isKing) {
     }
 
     //jump move and then capture middle piece
-    // if (Math.abs(rowDiff) == 2 && Math.abs(colDiff) == 2) {
-    //   let midRow = this.row + rowDiff / 2;
-    //   let midCol = this.col + colDiff / 2;
-    //   let jumpedPiece = board[midRow][midCol];
-
-    //   if (jumpedPiece != null && jumpedPiece.color != this.color) {
-    //     board[midRow][midCol] = null;
-    //     return true;
-    //   }
-    // }
-
+    
     if (this.isKing == true) {
       if (Math.abs(colDiff) == 2 && Math.abs(rowDiff) == 2) {
         let midRow = this.row + rowDiff / 2;
@@ -214,7 +203,9 @@ function Piece(row, col, color, isClicked, isKing) {
         let jumpedPiece = board[midRow][midCol];
         if (jumpedPiece != null && jumpedPiece.color != this.color) {
           board[midRow][midCol] = null;
+          
           return true;
+        
         }
       }
     } else if (this.color == "gray") {
@@ -238,6 +229,8 @@ function Piece(row, col, color, isClicked, isKing) {
         }
       }
     }
+
+   
 
     return false;
   };
